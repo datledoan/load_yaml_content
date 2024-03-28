@@ -1,0 +1,14 @@
+name: nic_1st
+
+image: map_image
+
+waypoints:
+ point_1:
+  id: point_1
+  position_x: -7.1
+  position_y: -5.1
+ point_2:
+  id: point_2
+  position_x: -7.1
+  position_y: -5.1
+
