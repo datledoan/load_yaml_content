@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Read YAML (Input)</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+</head>
+<body>
+    
+    <pre id="yamlOutput"></pre>
+
+    <dialog id="yamlInputDialog">
+        <textarea id="yamlInput" style="width: 100%; height: 200px;"></textarea>
+        <button id="submitButton">Parse YAML</button>
+    </dialog>
+
+    <script>
+        const yamlInputDialog = document.getElementById("yamlInputDialog");
+        const submitButton = document.getElementById("submitButton");
+        const yamlOutput = document.getElementById("yamlOutput");
+
+        // Show dialog on page load
+        yamlInputDialog.showModal();
+
+        submitButton.addEventListener("click", () => {
+            const yamlContent = document.getElementById("yamlInput").value;
+            parseYAML(yamlContent);
+        });
+
+        function parseYAML(yamlContent) {
+            try {
+                const data = jsyaml.load(yamlContent);
+                yamlOutput.textContent = "Point positions:";
+
+                for (const point in data.waypoints) {
+                    yamlOutput.textContent += `\n  - ${point.id}: x: ${data.waypoints[point].position_x}, y: ${data.waypoints[point].position_y}`;
+                }
+            } catch (error) {
+                console.error("Error parsing YAML:", error);
+                alert("Invalid YAML format. Please check your content and try again.");
+            }
+        }
+    </script>
+</body>
+</html>
