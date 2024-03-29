@@ -1,50 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Read YAML (Input)</title>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<title>YAML File Upload</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 </head>
 <body>
-    <button onclick="openYAMLInput()">Paste YAML Content</button>
-    <pre id="yamlOutput"></pre>
+  <input type="file" id="yamlFile" accept=".yaml,.yml">
+  <button type="button" onclick="readYaml()">Read YAML</button>
+  <div id="yamlContent"></div>
 
-    <script>
-        function openYAMLInput() {
-            const inputElement = document.createElement("textarea");
-            inputElement.style.cssText = `width: 100%; height: 200px;`; // Adjust size as needed
-            inputElement.placeholder = "Paste your YAML content here";
+  <script>
+    function readYaml() {
+  const fileInput = document.getElementById("yamlFile");
+  const file = fileInput.files[0];
 
-            const dialog = document.createElement("dialog");
-            dialog.appendChild(inputElement);
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result;
+      try {
+        const parsedYaml = jsyaml.load(text);
 
-            const submitButton = document.createElement("button");
-            submitButton.textContent = "Parse YAML";
-            submitButton.addEventListener("click", () => {
-                const yamlContent = inputElement.value;
-                parseYAML(yamlContent);
-                dialog.close();
-            });
+        // Access waypoints data
+        const waypoints = parsedYaml.waypoints;
 
-            dialog.appendChild(submitButton);
-            document.body.appendChild(dialog);
-            dialog.showModal();
+        // Loop through waypoints and print positions
+        let output = "Point Positions:\n";
+        for (const pointName in waypoints) {
+          const point = waypoints[pointName];
+          output += `  * ${point.id}: (${point.position_x}, ${point.position_y})\n`;
         }
-
-        function parseYAML(yamlContent) {
-            try {
-                const data = jsyaml.load(yamlContent);
-                const outputElement = document.getElementById("yamlOutput");
-                outputElement.textContent = "Point positions:";
-
-                for (const point in data.waypoints) {
-                    outputElement.textContent += `\n  - ${point.id}: x: ${data.waypoints[point].position_x}, y: ${data.waypoints[point].position_y}`;
-                }
-            } catch (error) {
-                console.error("Error parsing YAML:", error);
-                alert("Invalid YAML format. Please check your content and try again.");
-            }
-        }
-    </script>
+        document.getElementById("yamlContent").textContent = output;
+      } catch (error) {
+        console.error("Error parsing YAML:", error);
+        document.getElementById("yamlContent").textContent = "Error: Invalid YAML format.";
+      }
+    };
+    reader.readAsText(file);
+  }
+}
+  </script>
 </body>
 </html>
